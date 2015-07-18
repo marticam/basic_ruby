@@ -1,40 +1,45 @@
-module BasicRuby
-  class User
-    attr_accessor :last_name
-    attr_reader :id
-    @@users = []
+class User
+  attr_accessor :last_name, :birth_date, :address
+  attr_reader :age, :id
+  attr_writer :age
+  
+  @@users = []
 
-    def self.count
-      @@users.count
-    end
+  def self.find(id)
+    @@users.find { |user| user.id == id }
+  end
 
-    def self.all
-      @@users
-    end
-
-    def name
-      @name
-    end
-
-    def name=(value)
-      @name = value
-    end
-
-    def save
-      @id = @@users.count + 1
-      @@users << self
-      true
-    end
-
-    def destroy
-      user_id = self.id
-      # if user has an id is because it has been saved already
-      if user_id
-        @@users.delete_if { |user| user.id == user_id }
-        true
-      else
-        false
-      end
-    end
+  def self.find_by(attribute, value)
+    #if value==nil
+    #  return []
+    #else
+    return [] if !value
+    return [] unless
+    @@users.find_all { |user| user.send(attribute) == value }
+  end
+  
+  def first_name=(value)
+    @first_name = value
+  end
+  
+  def first_name
+    @first_name
+  end
+  
+  def save
+    @id = @@users.count + 1
+    @@users << self
+  end
+  
+  def self.all
+    @@users
+  end
+  
+  def self.count
+    @@users.count
+  end
+  
+  def destroy
+    @@users.delete(self)
   end
 end

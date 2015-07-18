@@ -1,81 +1,75 @@
 require 'spec_helper'
-
-describe BasicRuby::User do
-  before(:each) do
-    BasicRuby::User.class_variable_set(:@@users, [])
-  end
-  describe 'instance methods' do
-    it 'creates an instance of User class' do
-      expect(BasicRuby::User.new.class).to be BasicRuby::User
+  describe User do
+      before(:each) do
+      User.class_variable_set(:@@users, [])
     end
-
-    it 'sets the name for a user' do
-      user = BasicRuby::User.new
-      user.name = "Ruby"
-      expect(user.name).to eq "Ruby"
+    
+    describe 'instance methods' do
+      it "sets the first name" do
+        user = User.new
+        user.first_name = "Francisco"
+        expect(user.first_name).to eq "Francisco"
+      end
+      it "sets the last name" do
+        user = User.new
+        user.last_name = "Rojas"
+        expect(user.last_name).to eq "Rojas"
+      end
+      it "sets the age" do
+        user = User.new
+        user.age = 27
+        expect(user.age).to eq 27
+      end
+      it 'saves the user instance into the @@users array' do
+        user = User.new
+        user.first_name = "Francisco"
+        expect(User.count).to eq 0
+        user.save
+        expect(user.id).to eq 1
+        expect(User.count).to eq 1
+      end
+      it 'removes the user instance from the @@users array' do
+        user = User.new
+        user.first_name = "Francisco"
+        user.save
+        expect(User.count).to eq 1
+        user.destroy
+        expect(User.count).to eq 0
+      end
     end
-
-    it 'sets the last name for a user' do
-      user = BasicRuby::User.new
-      user.last_name = "Language"
-      expect(user.last_name).to eq "Language"
-    end
-
-    it 'should respond to #id' do
-      user = BasicRuby::User.new
-      expect(user.respond_to?(:id)).to be true
-    end
-
-    it 'should not respond to #id=' do
-      user = BasicRuby::User.new
-      expect(user.respond_to?(:id=)).to be false
-    end
-
-    it 'should save the user and assign an id to it' do
-      user = BasicRuby::User.new
+    
+    describe 'class methods' do
+      it 'returns an array with all users' do
+        user = User.new
+        user.first_name = "Francisco"
+        user.save
+        expect(User.all).to eq [user]
+      end
+    it 'finds the user with the given it' do
+      user = User.new
+      user.first_name = 'Jose'
       user.save
-      expect(user.id).to eq 1
-    end
 
-    it 'should destroy the user with the given id' do
-      user1 = BasicRuby::User.new
-      user1.save
-
-      user2 = BasicRuby::User.new
+      user2 = User.new
+      user2.first_name = 'Francisco'
       user2.save
-      expect(user1.destroy).to eq true
+
+      expect(User.find(user2.id)).to eq user2
     end
 
-    it 'should decrease the users count by 1' do
-      user1 = BasicRuby::User.new
-      user1.save
+    it 'finds all users with the given first_name' do
+      user = User.new
+      user.first_name = 'Jose'
+      user.save
 
-      user2 = BasicRuby::User.new
+      user2 = User.new
+      user2.first_name = 'Francisco'
       user2.save
-      expect(BasicRuby::User.count).to eq 2
-      expect { user1.destroy }.to change(BasicRuby::User, :count).by(-1)
-    end
-  end
 
-  describe 'class methods' do
-    it 'should increase user count by 1 after saving a user' do
-      user = BasicRuby::User.new
-      expect { user.save }.to change(BasicRuby::User, :count).by(1)
-    end
-
-    it 'should return an array of all users' do
-      wolfgang = BasicRuby::User.new
-      wolfgang.name = 'Wolfgang'
-      wolfgang.last_name = 'Mozart'
-      wolfgang.save
-
-      bach = BasicRuby::User.new
-      bach.name = 'Johann'
-      bach.last_name = 'Bach'
-      bach.save
-
-      expect(BasicRuby::User.all.count).to eq 2
-      expect(BasicRuby::User.all).to eq [wolfgang, bach]
+      user3 = User.new
+      user3.first_name = 'Jose'
+      user3.save
+      expect(User.find_by(:first_name,'Jose')).to eq [user, user3]
     end
   end
 end
